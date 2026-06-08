@@ -40,7 +40,37 @@
     </style>
 </head>
 <body>
-    <div class="card">
+    <div class="card"><!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>おみくじアプリ</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; padding-top: 50px; background: #f4f7f6; }
+        button { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+        h1 { color: #333; }
+        #result { margin-top: 20px; font-size: 24px; font-weight: bold; color: #ff4757; }
+    </style>
+</head>
+<body>
+    <h1>今日の一言おみくじ</h1>
+    <button id="btn">占う！</button>
+    <p id="result">ここに結果が出ます</p>
+
+    <script>
+        // ボタンを押した時の動き
+        document.getElementById('btn').addEventListener('click', () => {
+            // サーバーの「/api/fortune」という窓口にデータをちょうだいと頼む
+            fetch('/api/fortune')
+                .then(response => response.text())
+                .then(text => {
+                    // サーバーから返ってきた文字を画面に表示する
+                    document.getElementById('result').innerText = text;
+                });
+        });
+    </script>
+</body>
+</html>
         <h1 id="message">Hello from HTML!</h1>
         <p>Node.jsサーバーがこのファイルを読み込んで表示しています。</p>
         
