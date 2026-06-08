@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Node.js HTML サーバー</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 { color: #333; }
+        p { color: #666; margin-bottom: 20px; }
+        
+        /* ボタンのデザイン */
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1 id="message">Hello from HTML!</h1>
+        <p>Node.jsサーバーがこのファイルを読み込んで表示しています。</p>
+        
+        <button id="changeBtn">文字を変える</button>
+    </div>
+
+    <script>
+        // HTMLの要素（ボタンと文字）をJavaScriptに連れてくる
+        const button = document.getElementById('changeBtn');
+        const message = document.getElementById('message');
+
+        // ボタンが「クリック」されたときの動きを登録
+        button.addEventListener('click', () => {
+            // 文字を書き換える！
+            message.textContent = '🎉 文字が変わりました！';
+            message.style.color = '#28a745'; // ついでに色も緑色に変えてみる
+        });
+    </script>
+</body>
+</html>
