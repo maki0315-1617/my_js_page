@@ -2,8 +2,7 @@ const http = require('http');
 const fs = require('fs'); // ファイルを読み込むためのモジュール
 const path = require('path');
 
-const hostname = '127.0.0.1';
-// const port = 3000;
+const hostname = '0.0.0.0'; // どこからでもアクセスOKにする設定
 const port = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
