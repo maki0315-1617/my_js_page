@@ -346,7 +346,7 @@ app.get('/', (req, res) => {
             </div>
         </div>
 
-        <h1>Fortunes</h1>
+        <h1>運勢</h1>
         <p class="description">今日のあなたの運勢を占います</p>
         
         <button class="btn" onclick="drawOmikuji()">おみくじを引く</button>
