@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>モダンおみくじ</title>
+    <title>ロンの運勢占い</title>
     <style>
         /* 全体のデザイン設定 */
         body {
@@ -123,15 +123,15 @@ app.get('/', (req, res) => {
 
         .mascot-speech {
             background: #fff;
-            border: 2px solid #ffb8b8;
+            border: 2px solid #666;
             border-radius: 16px;
             padding: 8px 14px;
             font-size: 0.8rem;
-            color: #e17055;
+            color: #333;
             margin-bottom: 8px;
             position: relative;
             max-width: 260px;
-            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.15);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
@@ -143,7 +143,7 @@ app.get('/', (req, res) => {
             transform: translateX(-50%);
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
-            border-top: 8px solid #ffb8b8;
+            border-top: 8px solid #666;
         }
 
         .mascot {
@@ -191,18 +191,18 @@ app.get('/', (req, res) => {
         .mascot-body {
             width: 70px;
             height: 60px;
-            background: linear-gradient(135deg, #ffd93d 0%, #ffb347 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
             border-radius: 50% 50% 45% 45%;
             position: absolute;
             bottom: 0;
             left: 5px;
-            box-shadow: inset -4px -4px 8px rgba(0,0,0,0.08);
+            box-shadow: inset -4px -4px 8px rgba(0,0,0,0.3);
         }
 
         .mascot-ear {
             width: 22px;
             height: 28px;
-            background: linear-gradient(135deg, #ffd93d 0%, #ffb347 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
             border-radius: 50% 50% 0 0;
             position: absolute;
             top: 0;
@@ -214,7 +214,7 @@ app.get('/', (req, res) => {
         .mascot-ear-inner {
             width: 12px;
             height: 16px;
-            background: #ffb8b8;
+            background: #ff69b4;
             border-radius: 50% 50% 0 0;
             position: absolute;
             bottom: 4px;
@@ -238,17 +238,18 @@ app.get('/', (req, res) => {
         .mascot-eye {
             width: 10px;
             height: 12px;
-            background: #2c3e50;
+            background: #ffcc00;
             border-radius: 50%;
             position: relative;
             transition: all 0.3s ease;
+            border: 1px solid #ff9900;
         }
 
         .mascot-eye::after {
             content: '';
             width: 4px;
-            height: 4px;
-            background: white;
+            height: 6px;
+            background: #000;
             border-radius: 50%;
             position: absolute;
             top: 2px;
@@ -277,7 +278,7 @@ app.get('/', (req, res) => {
         .mascot-cheek {
             width: 10px;
             height: 6px;
-            background: #ff9a9a;
+            background: #ffb3ba;
             border-radius: 50%;
             opacity: 0.7;
         }
@@ -285,7 +286,7 @@ app.get('/', (req, res) => {
         .mascot-mouth {
             width: 12px;
             height: 6px;
-            border: 2px solid #2c3e50;
+            border: 2px solid #ffcc00;
             border-top: none;
             border-radius: 0 0 12px 12px;
             margin: 2px auto 0;
@@ -299,7 +300,7 @@ app.get('/', (req, res) => {
         }
 
         .mascot.sad-mood .mascot-mouth {
-            border-top: 2px solid #2c3e50;
+            border-top: 2px solid #ffcc00;
             border-bottom: none;
             border-radius: 12px 12px 0 0;
             margin-top: 4px;
@@ -308,7 +309,7 @@ app.get('/', (req, res) => {
         .mascot-tail {
             width: 24px;
             height: 24px;
-            background: linear-gradient(135deg, #ffd93d 0%, #ffb347 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
             border-radius: 50%;
             position: absolute;
             bottom: 8px;
@@ -326,7 +327,7 @@ app.get('/', (req, res) => {
 
     <div class="omikuji-card">
         <div class="mascot-area">
-            <div class="mascot-speech" id="mascotSpeech">こんにちは！一緒におみくじ引こう♪</div>
+            <div class="mascot-speech" id="mascotSpeech">ニャア！ロンだよ。今日の運勢を占おう♪</div>
             <div class="mascot" id="mascot">
                 <div class="mascot-ear left"><div class="mascot-ear-inner"></div></div>
                 <div class="mascot-ear right"><div class="mascot-ear-inner"></div></div>
@@ -346,8 +347,8 @@ app.get('/', (req, res) => {
             </div>
         </div>
 
-        <h1>運勢</h1>
-        <p class="description">今日のあなたの運勢を占います</p>
+        <h1>ロンの運勢占い</h1>
+        <p class="description">黒猫ロンが今日のあなたの運勢を占います</p>
         
         <button class="btn" onclick="drawOmikuji()">おみくじを引く</button>
 
@@ -409,7 +410,7 @@ app.get('/', (req, res) => {
         ];
 
         const items = [
-            "新しい靴", "お気に入りのカフェのコーヒー", "ノートとペン", "観葉植物",
+            "新しい靴", "��気に入りのカフェのコーヒー", "ノートとペン", "観葉植物",
             "スマホケース", "ハンカチ", "お香・アロマ", "温かいお茶", "お守り",
             "音楽プレイリスト", "お気に入りの本", "チョコレート", "傘", "時計",
             "マフラーやストール", "写真立て", "ボールペン", "クッキー"
@@ -423,12 +424,12 @@ app.get('/', (req, res) => {
         };
 
         const mascotMessages = {
-            idle: ["こんにちは！一緒におみくじ引こう♪", "今日の運勢、占ってみる？", "ボクが応援してるよ！"],
-            drawing: ["ガタガタ…ドキドキ！", "何が出るかな〜？", "おみくじおみくじ〜♪"],
-            great: ["やったー！超大吉級！", "すごい！最高の運気だよ！", "わぁ〜！ラッキー！"],
+            idle: ["ニャア！ロンだよ。今日の運勢を占おう♪", "運勢を占ってみない？", "ロンが応援してるにゃん！"],
+            drawing: ["ガタガタ…ニャーン！", "何が出るかな〜？", "おみくじおみくじ〜♪"],
+            great: ["ニャア！超大吉だ！", "すごい！最高の運気だね！", "わぁ〜！ラッキーにゃん！"],
             good: ["いい感じだね！", "吉が出たよ！良い一日になりそう♪", "うれしい！がんばってね！"],
-            neutral: ["うーん、まあまあかな？", "自分のペースでいこう！", "どっちつかず…でも大丈夫！"],
-            bad: ["えへへ…次はきっと吉！", "大丈夫、ボクがそばにいるよ", "凶でも、明日はきっと良い日！"]
+            neutral: ["まあまあかな…", "自分のペースでいこう！", "どっちつかず…でも大丈夫！"],
+            bad: ["えへへ…次はきっと吉にゃん！", "大丈夫、ロンがそばにいるよ", "凶でも、明日はきっと良い日！"]
         };
 
         function pickRandom(arr) {
