@@ -110,6 +110,20 @@ app.get('/', (req, res) => {
             color: #7f8c8d;
         }
 
+        /* 日時表示 */
+        #datetime {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        /* 結果に表示する引いた日時 */
+        #drawTime {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
         /* マスコット */
         .mascot-area {
             position: relative;
@@ -350,6 +364,9 @@ app.get('/', (req, res) => {
         <h1>ロンの運勢占い</h1>
         <p class="description">黒猫ロンが今日のあなたの運勢を占います</p>
         
+        <!-- 追加: ページ上部に常時表示する日時 -->
+        <div id="datetime">今日の日時: -</div>
+
         <button class="btn" onclick="drawOmikuji()">おみくじを引く</button>
 
         <div class="result-container" id="resultContainer">
@@ -360,6 +377,8 @@ app.get('/', (req, res) => {
                     <span>ラッキーカラー: <strong id="colorText">-</strong></span>
                     <span>ラッキーアイテム: <strong id="itemText">-</strong></span>
                 </div>
+                <!-- 追加: 引いた日時を結果内に表示 -->
+                <div id="drawTime">引いた日時: -</div>
             </div>
         </div>
     </div>
@@ -410,7 +429,7 @@ app.get('/', (req, res) => {
         ];
 
         const items = [
-            "新しい靴", "��気に入りのカフェのコーヒー", "ノートとペン", "観葉植物",
+            "新しい靴", "お気に入りのカフェのコーヒー", "ノートとペン", "観葉植物",
             "スマホケース", "ハンカチ", "お香・アロマ", "温かいお茶", "お守り",
             "音楽プレイリスト", "お気に入りの本", "チョコレート", "傘", "時計",
             "マフラーやストール", "写真立て", "ボールペン", "クッキー"
@@ -468,12 +487,37 @@ app.get('/', (req, res) => {
             return items[items.length - 1];
         }
 
+        // --- 追加: 常時日時表示（ページ上部） ---
+        const datetimeEl = document.getElementById('datetime');
+        function updateDatetime() {
+            const now = new Date();
+            datetimeEl.textContent = '今日の日時: ' + now.toLocaleString();
+        }
+        updateDatetime();
+        setInterval(updateDatetime, 1000);
+
+        // 変更: ロン君が考えているアニメーションを長くして、結果に引いた日時を表示する
         function drawOmikuji() {
             const container = document.getElementById('resultContainer');
-            container.classList.remove('show');
-            setMascotMood(null, true);
+            const speech = document.getElementById('mascotSpeech');
+            const drawTimeEl = document.getElementById('drawTime');
 
+            container.classList.remove('show');
+            setMascotMood(null, true); // 振動等の表示を付与
+
+            // 考えている間のドットアニメーション（500ms ごと）
+            let dots = 0;
+            const base = pickRandom(mascotMessages.drawing);
+            const thinkingInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                speech.innerText = base + ' ' + '.'.repeat(dots);
+            }, 500);
+
+            // 待機時間を長めに（例：5000ms = 5秒）
+            const thinkingDuration = 5000;
             setTimeout(() => {
+                clearInterval(thinkingInterval);
+
                 const fortune = pickWeighted(fortunes);
                 const advice = pickRandom(advices);
                 const color = pickRandom(colors);
@@ -485,9 +529,13 @@ app.get('/', (req, res) => {
                 document.getElementById('itemText').innerText = item;
                 document.getElementById('fortuneText').style.color = fortuneColors[fortune.style];
 
+                // 引いた日時を表示
+                const now = new Date();
+                drawTimeEl.innerText = '引いた日時: ' + now.toLocaleString();
+
                 setMascotMood(fortune.style, false);
                 container.classList.add('show');
-            }, 600);
+            }, thinkingDuration);
         }
     </script>
 </body>
