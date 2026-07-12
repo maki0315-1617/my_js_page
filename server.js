@@ -346,12 +346,14 @@ app.get('/', (req, res) => {
             transition: all 0.5s ease;
             max-height: 0;
             overflow: hidden;
+            display: none;
         }
 
         .history-container.show {
             opacity: 1;
             transform: translateY(0);
             max-height: 500px;
+            display: block;
         }
 
         .history-item {
@@ -433,7 +435,7 @@ app.get('/', (req, res) => {
         </div>
 
         <!-- 追加: 過去の運勢表示セクション -->
-        <div class="history-container" id="historyContainer" style="display: none;">
+        <div class="history-container" id="historyContainer">
             <h2 style="font-size: 1.3rem; color: #2c3e50; margin-top: 0; margin-bottom: 15px;">過去の運勢（最新3件）</h2>
             <div id="historyList" style="max-height: 400px; overflow-y: auto;">
                 <div style="text-align: center; color: #7f8c8d; padding: 20px;">履歴がまだありません</div>
