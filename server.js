@@ -373,6 +373,8 @@ app.get('/', (req, res) => {
             <div class="fortune" id="fortuneText">-</div>
             <div class="details">
                 <div id="adviceText">-</div>
+                <!-- 追加: 運勢を変えるためのアドバイス -->
+                <div id="changeFortuneAdvice" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 0.9rem; font-style: italic; color: #8e44ad;">-</div>
                 <div class="extra-info">
                     <span>ラッキーカラー: <strong id="colorText">-</strong></span>
                     <span>ラッキーアイテム: <strong id="itemText">-</strong></span>
@@ -451,6 +453,42 @@ app.get('/', (req, res) => {
             bad: ["えへへ…次はきっと吉にゃん！", "大丈夫、ロンがそばにいるよ", "凶でも、明日はきっと良い日！"]
         };
 
+        // 追加: 運勢を変えるためのアドバイス
+        const changeFortuneAdvice = {
+            great: [
+                "今の気持ちを大切にしてください。この幸運を他者と分かち合うことで、さらに幸せが増します。",
+                "感謝の気持ちを忘れずに過ごしてください。その感謝があれば、運勢はずっと良いままです。",
+                "この幸運を次のチャレンジへの足がかりにしましょう。さらに大きな目標へ向かう時です。",
+                "良い流れに乗っています。今こそ、あなたが本当にやりたいことに取り組むチャンスです。",
+                "周囲への親切や優しさを忘れずに。与えたものはやがて自分に返ってきます。",
+                "この運気を維持するために、毎日小さな感謝を忘れずに。継続することが運を呼びます。"
+            ],
+            good: [
+                "周囲との関係を大事にしましょう。人間関係を丁寧にしていくことが、運勢を保つ鍵です。",
+                "小さなことでも丁寧に取り組むと、良い運勢がさらに続きます。",
+                "今は地道な努力が報われる時。コツコツと積み重ねたものが大きな成果になります。",
+                "信頼できる人に相談することで、さらに良い道が開けるでしょう。",
+                "毎日の習慣を大事にしてください。小さな良い習慣が大きな運気を作ります。",
+                "自分の直感と周囲の声のバランスを取ることが大切です。両方を大事にしましょう。"
+            ],
+            neutral: [
+                "自分自身と向き合う時間を作りましょう。瞑想や日記を通じて、気づきが生まれます。",
+                "新しいことに挑戦する勇気を持つことで、運勢は変わります。小さな一歩から始めてください。",
+                "今は準備の時期です。次のステップに向けて、スキルや知識を磨きましょう。",
+                "小さな変化を大事にしてください。目に見えない変化が、やがて大きな流れを作ります。",
+                "人との交流を増やしてみてください。新しい出会いが運勢を動かすきっかけになります。",
+                "今のあなたに必要なものは何かをよく考えてみてください。その答えが運勢を変えます。"
+            ],
+            bad: [
+                "前向きな気持ちを保つことが最も大切です。ポジティブなマインドが、状況を変えます。",
+                "今は学びの時。この経験から得られる教訓が、将来の幸運へとつながります。",
+                "困難な時こそ、できることに集中しましょう。小さな成功が自信につながります。",
+                "信頼できる人に頼ることも大事です。一人で抱え込まず、サポートを求めてください。",
+                "今のマイナスの状況は、あなたを成長させるための試練です。乗り越えた先に光があります。",
+                "今こそ、自分の本当に大切なものが何かを知る時です。その気づきが運勢を変えます。"
+            ]
+        };
+
         function pickRandom(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
@@ -461,7 +499,15 @@ app.get('/', (req, res) => {
 
             mascot.className = 'mascot';
             if (isDrawing) {
+                // 待ち時間中により多くの表情変化を加える
                 mascot.classList.add('shake');
+                // ランダムに目を見開いたり、つぶったりする表現を追加
+                const randomMood = Math.random();
+                if (randomMood < 0.3) {
+                    mascot.classList.add('happy');
+                } else if (randomMood < 0.6) {
+                    mascot.classList.add('sad-mood');
+                }
                 speech.innerText = pickRandom(mascotMessages.drawing);
                 return;
             }
@@ -511,6 +557,15 @@ app.get('/', (req, res) => {
             const thinkingInterval = setInterval(() => {
                 dots = (dots + 1) % 4;
                 speech.innerText = base + ' ' + '.'.repeat(dots);
+                // 待ち時間中にロンの表情をランダムに変化させる
+                const mascot = document.getElementById('mascot');
+                const randomMood = Math.random();
+                mascot.className = 'mascot shake';
+                if (randomMood < 0.4) {
+                    mascot.classList.add('happy');
+                } else if (randomMood < 0.7) {
+                    mascot.classList.add('sad-mood');
+                }
             }, 500);
 
             // 待機時間を長めに（例：5000ms = 5秒）
@@ -522,9 +577,11 @@ app.get('/', (req, res) => {
                 const advice = pickRandom(advices);
                 const color = pickRandom(colors);
                 const item = pickRandom(items);
+                const changeTip = pickRandom(changeFortuneAdvice[fortune.style]);
 
                 document.getElementById('fortuneText').innerText = fortune.name;
                 document.getElementById('adviceText').innerText = advice;
+                document.getElementById('changeFortuneAdvice').innerText = '🌟 運勢を変えるためには：' + changeTip;
                 document.getElementById('colorText').innerText = color;
                 document.getElementById('itemText').innerText = item;
                 document.getElementById('fortuneText').style.color = fortuneColors[fortune.style];
