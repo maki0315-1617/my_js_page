@@ -413,7 +413,7 @@ app.get('/', (req, res) => {
         <!-- 追加: ページ上部に常時表示する日時 -->
         <div id="datetime">今日の日時: -</div>
 
-        <button class="btn" onclick="drawOmikuji()">おみくじを引く</button>
+        <button class="btn" onclick="drawOmikuji()">今日の運勢を占う</button>
 
         <button class="btn" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); margin-top: 15px;" onclick="toggleHistory()">過去の運勢を見る</button>
 
