@@ -335,6 +335,52 @@ app.get('/', (req, res) => {
             0%, 100% { transform: rotate(0deg); }
             50% { transform: rotate(15deg); }
         }
+
+        /* 過去の運勢セクション */
+        .history-container {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .history-container.show {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px;
+        }
+
+        .history-item {
+            background: #f0f4f8;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: #e8f1f8;
+            transform: translateX(4px);
+        }
+
+        .history-fortune {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .history-time {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
@@ -369,6 +415,8 @@ app.get('/', (req, res) => {
 
         <button class="btn" onclick="drawOmikuji()">おみくじを引く</button>
 
+        <button class="btn" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); margin-top: 15px;" onclick="toggleHistory()">過去の運勢を見る</button>
+
         <div class="result-container" id="resultContainer">
             <div class="fortune" id="fortuneText">-</div>
             <div class="details">
@@ -381,6 +429,14 @@ app.get('/', (req, res) => {
                 </div>
                 <!-- 追加: 引いた日時を結果内に表示 -->
                 <div id="drawTime">引いた日時: -</div>
+            </div>
+        </div>
+
+        <!-- 追加: 過去の運勢表示セクション -->
+        <div class="history-container" id="historyContainer" style="display: none;">
+            <h2 style="font-size: 1.3rem; color: #2c3e50; margin-top: 0; margin-bottom: 15px;">過去の運勢（最新3件）</h2>
+            <div id="historyList" style="max-height: 400px; overflow-y: auto;">
+                <div style="text-align: center; color: #7f8c8d; padding: 20px;">履歴がまだありません</div>
             </div>
         </div>
     </div>
@@ -590,10 +646,63 @@ app.get('/', (req, res) => {
                 const now = new Date();
                 drawTimeEl.innerText = '引いた日時: ' + now.toLocaleString();
 
+                // 追加: LocalStorageに保存
+                saveToHistory({
+                    fortune: fortune.name,
+                    advice: advice,
+                    color: color,
+                    item: item,
+                    time: now.toLocaleString(),
+                    style: fortune.style
+                });
+
                 setMascotMood(fortune.style, false);
                 container.classList.add('show');
             }, thinkingDuration);
         }
+
+        // 追加: LocalStorageに運勢を保存（最新3件）
+        function saveToHistory(fortuneData) {
+            let history = JSON.parse(localStorage.getItem('omikujiHistory') || '[]');
+            history.unshift(fortuneData); // 先頭に追加
+            history = history.slice(0, 3); // 最新3件に制限
+            localStorage.setItem('omikujiHistory', JSON.stringify(history));
+        }
+
+        // 追加: 履歴表示のトグル
+        function toggleHistory() {
+            const historyContainer = document.getElementById('historyContainer');
+            historyContainer.classList.toggle('show');
+            if (historyContainer.classList.contains('show')) {
+                displayHistory();
+            }
+        }
+
+        // 追加: 履歴を表示
+        function displayHistory() {
+            const history = JSON.parse(localStorage.getItem('omikujiHistory') || '[]');
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; color: #7f8c8d; padding: 20px;">履歴がまだありません</div>';
+                return;
+            }
+
+            historyList.innerHTML = history.map((item, index) => `
+                <div class="history-item">
+                    <div class="history-fortune" style="color: ${fortuneColors[item.style]};">第${index + 1}回: ${item.fortune}</div>
+                    <div><strong>アドバイス：</strong> ${item.advice}</div>
+                    <div><strong>ラッキーカラー：</strong> ${item.color}</div>
+                    <div><strong>ラッキーアイテム：</strong> ${item.item}</div>
+                    <div class="history-time">${item.time}</div>
+                </div>
+            `).join('');
+        }
+
+        // 追加: ページ読み込み時に初期化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 初期化処理（必要に応じてここに追加）
+        });
     </script>
 </body>
 </html>
