@@ -688,15 +688,19 @@ app.get('/', (req, res) => {
                 return;
             }
 
-            historyList.innerHTML = history.map((item, index) => `
-                <div class="history-item">
-                    <div class="history-fortune" style="color: ${fortuneColors[item.style]};">第${index + 1}回: ${item.fortune}</div>
-                    <div><strong>アドバイス：</strong> ${item.advice}</div>
-                    <div><strong>ラッキーカラー：</strong> ${item.color}</div>
-                    <div><strong>ラッキーアイテム：</strong> ${item.item}</div>
-                    <div class="history-time">${item.time}</div>
-                </div>
-            `).join('');
+            let html = '';
+            for (let i = 0; i < history.length; i++) {
+                const item = history[i];
+                const index = i;
+                html += '<div class="history-item">';
+                html += '<div class="history-fortune" style="color: ' + fortuneColors[item.style] + ';">第' + (index + 1) + '回: ' + item.fortune + '</div>';
+                html += '<div><strong>アドバイス：</strong> ' + item.advice + '</div>';
+                html += '<div><strong>ラッキーカラー：</strong> ' + item.color + '</div>';
+                html += '<div><strong>ラッキーアイテム：</strong> ' + item.item + '</div>';
+                html += '<div class="history-time">' + item.time + '</div>';
+                html += '</div>';
+            }
+            historyList.innerHTML = html;
         }
 
         // 追加: ページ読み込み時に初期化
