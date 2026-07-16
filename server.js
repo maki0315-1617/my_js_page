@@ -335,6 +335,54 @@ app.get('/', (req, res) => {
             0%, 100% { transform: rotate(0deg); }
             50% { transform: rotate(15deg); }
         }
+
+        /* 過去の運勢セクション */
+        .history-container {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+            max-height: 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .history-container.show {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px;
+            display: block;
+        }
+
+        .history-item {
+            background: #f0f4f8;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: #e8f1f8;
+            transform: translateX(4px);
+        }
+
+        .history-fortune {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .history-time {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
@@ -367,18 +415,30 @@ app.get('/', (req, res) => {
         <!-- 追加: ページ上部に常時表示する日時 -->
         <div id="datetime">今日の日時: -</div>
 
-        <button class="btn" onclick="drawOmikuji()">おみくじを引く</button>
+        <button class="btn" onclick="drawOmikuji()">今日の運勢を占う</button>
+
+        <button class="btn" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); margin-top: 15px;" onclick="toggleHistory()">過去の運勢を見る</button>
 
         <div class="result-container" id="resultContainer">
             <div class="fortune" id="fortuneText">-</div>
             <div class="details">
                 <div id="adviceText">-</div>
+                <!-- 追加: 運勢を変えるためのアドバイス -->
+                <div id="changeFortuneAdvice" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 0.9rem; font-style: italic; color: #8e44ad;">-</div>
                 <div class="extra-info">
                     <span>ラッキーカラー: <strong id="colorText">-</strong></span>
                     <span>ラッキーアイテム: <strong id="itemText">-</strong></span>
                 </div>
                 <!-- 追加: 引いた日時を結果内に表示 -->
                 <div id="drawTime">引いた日時: -</div>
+            </div>
+        </div>
+
+        <!-- 追加: 過去の運勢表示セクション -->
+        <div class="history-container" id="historyContainer">
+            <h2 style="font-size: 1.3rem; color: #2c3e50; margin-top: 0; margin-bottom: 15px;">過去の運勢（最新3件）</h2>
+            <div id="historyList" style="max-height: 400px; overflow-y: auto;">
+                <div style="text-align: center; color: #7f8c8d; padding: 20px;">履歴がまだありません</div>
             </div>
         </div>
     </div>
@@ -451,6 +511,42 @@ app.get('/', (req, res) => {
             bad: ["えへへ…次はきっと吉にゃん！", "大丈夫、ロンがそばにいるよ", "凶でも、明日はきっと良い日！"]
         };
 
+        // 追加: 運勢を変えるためのアドバイス
+        const changeFortuneAdvice = {
+            great: [
+                "今の気持ちを大切にしてください。この幸運を他者と分かち合うことで、さらに幸せが増します。",
+                "感謝の気持ちを忘れずに過ごしてください。その感謝があれば、運勢はずっと良いままです。",
+                "この幸運を次のチャレンジへの足がかりにしましょう。さらに大きな目標へ向かう時です。",
+                "良い流れに乗っています。今こそ、あなたが本当にやりたいことに取り組むチャンスです。",
+                "周囲への親切や優しさを忘れずに。与えたものはやがて自分に返ってきます。",
+                "この運気を維持するために、毎日小さな感謝を忘れずに。継続することが運を呼びます。"
+            ],
+            good: [
+                "周囲との関係を大事にしましょう。人間関係を丁寧にしていくことが、運勢を保つ鍵です。",
+                "小さなことでも丁寧に取り組むと、良い運勢がさらに続きます。",
+                "今は地道な努力が報われる時。コツコツと積み重ねたものが大きな成果になります。",
+                "信頼できる人に相談することで、さらに良い道が開けるでしょう。",
+                "毎日の習慣を大事にしてください。小さな良い習慣が大きな運気を作ります。",
+                "自分の直感と周囲の声のバランスを取ることが大切です。両方を大事にしましょう。"
+            ],
+            neutral: [
+                "自分自身と向き合う時間を作りましょう。瞑想や日記を通じて、気づきが生まれます。",
+                "新しいことに挑戦する勇気を持つことで、運勢は変わります。小さな一歩から始めてください。",
+                "今は準備の時期です。次のステップに向けて、スキルや知識を磨きましょう。",
+                "小さな変化を大事にしてください。目に見えない変化が、やがて大きな流れを作ります。",
+                "人との交流を増やしてみてください。新しい出会いが運勢を動かすきっかけになります。",
+                "今のあなたに必要なものは何かをよく考えてみてください。その答えが運勢を変えます。"
+            ],
+            bad: [
+                "前向きな気持ちを保つことが最も大切です。ポジティブなマインドが、状況を変えます。",
+                "今は学びの時。この経験から得られる教訓が、将来の幸運へとつながります。",
+                "困難な時こそ、できることに集中しましょう。小さな成功が自信につながります。",
+                "信頼できる人に頼ることも大事です。一人で抱え込まず、サポートを求めてください。",
+                "今のマイナスの状況は、あなたを成長させるための試練です。乗り越えた先に光があります。",
+                "今こそ、自分の本当に大切なものが何かを知る時です。その気づきが運勢を変えます。"
+            ]
+        };
+
         function pickRandom(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
@@ -461,7 +557,15 @@ app.get('/', (req, res) => {
 
             mascot.className = 'mascot';
             if (isDrawing) {
+                // 待ち時間中により多くの表情変化を加える
                 mascot.classList.add('shake');
+                // ランダムに目を見開いたり、つぶったりする表現を追加
+                const randomMood = Math.random();
+                if (randomMood < 0.3) {
+                    mascot.classList.add('happy');
+                } else if (randomMood < 0.6) {
+                    mascot.classList.add('sad-mood');
+                }
                 speech.innerText = pickRandom(mascotMessages.drawing);
                 return;
             }
@@ -511,6 +615,15 @@ app.get('/', (req, res) => {
             const thinkingInterval = setInterval(() => {
                 dots = (dots + 1) % 4;
                 speech.innerText = base + ' ' + '.'.repeat(dots);
+                // 待ち時間中にロンの表情をランダムに変化させる
+                const mascot = document.getElementById('mascot');
+                const randomMood = Math.random();
+                mascot.className = 'mascot shake';
+                if (randomMood < 0.4) {
+                    mascot.classList.add('happy');
+                } else if (randomMood < 0.7) {
+                    mascot.classList.add('sad-mood');
+                }
             }, 500);
 
             // 待機時間を長めに（例：5000ms = 5秒）
@@ -522,9 +635,11 @@ app.get('/', (req, res) => {
                 const advice = pickRandom(advices);
                 const color = pickRandom(colors);
                 const item = pickRandom(items);
+                const changeTip = pickRandom(changeFortuneAdvice[fortune.style]);
 
                 document.getElementById('fortuneText').innerText = fortune.name;
                 document.getElementById('adviceText').innerText = advice;
+                document.getElementById('changeFortuneAdvice').innerText = '🌟 運勢を変えるためには：' + changeTip;
                 document.getElementById('colorText').innerText = color;
                 document.getElementById('itemText').innerText = item;
                 document.getElementById('fortuneText').style.color = fortuneColors[fortune.style];
@@ -533,10 +648,67 @@ app.get('/', (req, res) => {
                 const now = new Date();
                 drawTimeEl.innerText = '引いた日時: ' + now.toLocaleString();
 
+                // 追加: LocalStorageに保存
+                saveToHistory({
+                    fortune: fortune.name,
+                    advice: advice,
+                    color: color,
+                    item: item,
+                    time: now.toLocaleString(),
+                    style: fortune.style
+                });
+
                 setMascotMood(fortune.style, false);
                 container.classList.add('show');
             }, thinkingDuration);
         }
+
+        // 追加: LocalStorageに運勢を保存（最新3件）
+        function saveToHistory(fortuneData) {
+            let history = JSON.parse(localStorage.getItem('omikujiHistory') || '[]');
+            history.unshift(fortuneData); // 先頭に追加
+            history = history.slice(0, 3); // 最新3件に制限
+            localStorage.setItem('omikujiHistory', JSON.stringify(history));
+        }
+
+        // 追加: 履歴表示のトグル
+        function toggleHistory() {
+            const historyContainer = document.getElementById('historyContainer');
+            historyContainer.classList.toggle('show');
+            if (historyContainer.classList.contains('show')) {
+                displayHistory();
+            }
+        }
+
+        // 追加: 履歴を表示
+        function displayHistory() {
+            const history = JSON.parse(localStorage.getItem('omikujiHistory') || '[]');
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; color: #7f8c8d; padding: 20px;">履歴がまだありません</div>';
+                return;
+            }
+
+            let html = '';
+            for (let i = 0; i < history.length; i++) {
+                const item = history[i];
+                const index = i;
+                html += '<div class="history-item">';
+                html += '<div class="history-fortune" style="color: ' + fortuneColors[item.style] + ';">第' + (index + 1) + '回: ' + item.fortune + '</div>';
+                html += '<div><strong>アドバイス：</strong> ' + item.advice + '</div>';
+                html += '<div><strong>ラッキーカラー：</strong> ' + item.color + '</div>';
+                html += '<div><strong>ラッキーアイテム：</strong> ' + item.item + '</div>';
+                html += '<div class="history-time">' + item.time + '</div>';
+                html += '</div>';
+            }
+            historyList.innerHTML = html;
+        }
+
+        // 追加: ページ読み込み時に初期化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 初期化処理（必要に応じてここに追加）
+        });
     </script>
 </body>
 </html>
